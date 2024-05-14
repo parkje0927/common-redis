@@ -1,8 +1,7 @@
 package com.study.common.config;
 
-import com.study.common.config.properties.RedisProperty;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,10 +19,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @RequiredArgsConstructor
 public class RedisConfig {
 
-    @Value("${redis.client-name}")
-    private String clientName;
-
-    private final RedisProperty redisProperty;
+    private final RedisProperties redisProperties;
 
     @Bean
     public RedisSerializer<Object> jsonRedisSerializer() {
@@ -33,9 +29,9 @@ public class RedisConfig {
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
-        config.setHostName(redisProperty.host());
-        config.setPort(redisProperty.port());
-        config.setPassword(redisProperty.password());
+        config.setHostName(redisProperties.getHost());
+        config.setPort(redisProperties.getPort());
+        config.setPassword(redisProperties.getPassword());
         return new LettuceConnectionFactory(config, getLettuceClientConfiguration());
     }
 
@@ -51,7 +47,7 @@ public class RedisConfig {
 
     private LettuceClientConfiguration getLettuceClientConfiguration() {
         return LettuceClientConfiguration.builder()
-                .clientName(clientName)
+                .clientName(redisProperties.getClientName())
                 .build();
     }
 }
